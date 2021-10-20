@@ -108,14 +108,8 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
       numResults: 2,
       threshold: 0.2,
       imageMean: 0,
-      imageStd: 255.0,
+      imageStd: 255,
     );
-
-    print("Results: ${results!.length}");
-
-    results.map((result) {
-      print(result["confidence"]);
-    });
 
     setState(() {
       _results = results;
