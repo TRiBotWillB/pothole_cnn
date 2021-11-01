@@ -89,9 +89,7 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
     Tflite.close();
 
     await Tflite.loadModel(
-      model: "assets/model.tflite",
-      labels: "assets/label.txt"
-    );
+        model: "assets/model.tflite", labels: "assets/label.txt");
 
     print("Loaded model");
   }
@@ -107,8 +105,8 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
       path: image!.path,
       numResults: 2,
       threshold: 0.2,
-      imageMean: 0,
-      imageStd: 255,
+      imageMean: 0.0,
+      imageStd: 1.0,
     );
 
     setState(() {
