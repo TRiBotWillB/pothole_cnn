@@ -84,7 +84,7 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
       floatingActionButton: FloatingActionButton(
           onPressed: selectImage,
           tooltip: 'Select an image',
-          child: const Icon(Icons.search)),
+          child: const Icon(Icons.)),
     );
   }
 
