@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
@@ -46,7 +47,9 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
         if (_image != null)
           Container(
               margin: const EdgeInsets.all(10),
-              child: Image.file(File(_image!.path)))
+              child: AspectRatio(
+                aspectRatio: 1/1,
+                child: Image.file(File(_image!.path), fit: BoxFit.cover)))
         else
           Container(
             margin: const EdgeInsets.all(40),
