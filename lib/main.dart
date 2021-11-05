@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -27,6 +28,7 @@ class PotholeDetectionApp extends StatefulWidget {
 class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
   XFile? _image;
   List? _results;
+  LocationData? _location;
 
   @override
   void initState() {
@@ -64,24 +66,38 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
         SingleChildScrollView(
           child: Column(
             children: _results != null && _results!.isNotEmpty
-                ? _results!.map((result) {
-                    return Card(
+                ? [
+                    ..._results!.map((result) {
+                      return Card(
+                        child: Container(
+                          margin: const EdgeInsets.all(10),
+                          child: Text(
+                            "${result["label"]} -  ${result["confidence"].toStringAsFixed(2)}",
+                            style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                    Card(
                       child: Container(
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         child: Text(
-                          "${result["label"]} -  ${result["confidence"].toStringAsFixed(2)}",
+                          "Location: ${_location!.latitude}, ${_location!.longitude}",
                           style: const TextStyle(
                               color: Colors.white,
                               fontSize: 20.0,
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                    );
-                  }).toList()
+                    )
+                  ]
                 : [
                     Card(
                       child: Container(
-                        margin: EdgeInsets.all(10),
+                        margin: const EdgeInsets.all(10),
                         child: const Text(
                           "No Potholes detected.",
                           style: TextStyle(
@@ -128,17 +144,43 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
     );
 
     // If we have found any potholes, let's log the GPS location
-    if (results != null && results.isNotEmpty) {
-      print("Found pothole");
-    }
+    if (results != null && results.isNotEmpty) {}
+
+    var locationData = await getGpsLocation();
 
     setState(() {
       _results = results;
       _image = image;
+      _location = locationData;
     });
   }
 
   Future<LocationData?> getGpsLocation() async {
-    return null;
+    var completer = Completer<LocationData?>();
+
+    Location location = Location();
+
+    bool _serviceEnabled;
+    PermissionStatus _permissionGranted;
+
+    _serviceEnabled = await location.serviceEnabled();
+    if (!_serviceEnabled) {
+      _serviceEnabled = await location.requestService();
+      if (!_serviceEnabled) {
+        return null;
+      }
+    }
+
+    _permissionGranted = await location.hasPermission();
+    if (_permissionGranted == PermissionStatus.denied) {
+      _permissionGranted = await location.requestPermission();
+      if (_permissionGranted != PermissionStatus.granted) {
+        return null;
+      }
+    }
+
+    completer.complete(await location.getLocation());
+
+    return completer.future;
   }
 }
