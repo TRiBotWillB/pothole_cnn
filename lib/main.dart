@@ -139,8 +139,8 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
       path: image!.path,
       numResults: 2,
       threshold: 0.2,
-      imageMean: 0,
-      imageStd: 255,
+      imageMean: 0.0,
+      imageStd: 1.0,
     );
 
     // If we have found any potholes, let's log the GPS location
