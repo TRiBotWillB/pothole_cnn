@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:tflite/tflite.dart';
+import 'package:location/location.dart';
 
 void main() {
   runApp(App());
@@ -48,8 +49,8 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
           Container(
               margin: const EdgeInsets.all(10),
               child: AspectRatio(
-                aspectRatio: 1/1,
-                child: Image.file(File(_image!.path), fit: BoxFit.cover)))
+                  aspectRatio: 1 / 1,
+                  child: Image.file(File(_image!.path), fit: BoxFit.cover)))
         else
           Container(
             margin: const EdgeInsets.all(40),
@@ -62,7 +63,7 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
           ),
         SingleChildScrollView(
           child: Column(
-            children: _results != null
+            children: _results != null && _results!.isNotEmpty
                 ? _results!.map((result) {
                     return Card(
                       child: Container(
@@ -77,14 +78,28 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
                       ),
                     );
                   }).toList()
-                : [],
+                : [
+                    Card(
+                      child: Container(
+                        margin: EdgeInsets.all(10),
+                        child: const Text(
+                          "No Potholes detected.",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 20.0,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    )
+                  ],
           ),
         ),
       ]),
       floatingActionButton: FloatingActionButton(
           onPressed: selectImage,
           tooltip: 'Select an image',
-          child: const Icon(Icons.)),
+          backgroundColor: Colors.deepPurple,
+          child: const Icon(Icons.image, color: Colors.white)),
     );
   }
 
@@ -92,9 +107,7 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
     Tflite.close();
 
     await Tflite.loadModel(
-      model: "assets/model.tflite",
-      labels: "assets/label.txt"
-    );
+        model: "assets/model.tflite", labels: "assets/label.txt");
 
     print("Loaded model");
   }
@@ -114,9 +127,18 @@ class _PotholeDetectionAppState extends State<PotholeDetectionApp> {
       imageStd: 255,
     );
 
+    // If we have found any potholes, let's log the GPS location
+    if (results != null && results.isNotEmpty) {
+      print("Found pothole");
+    }
+
     setState(() {
       _results = results;
       _image = image;
     });
+  }
+
+  Future<LocationData?> getGpsLocation() async {
+    return null;
   }
 }
